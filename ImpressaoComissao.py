@@ -5,7 +5,6 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 import io
-from PyPDF2 import PdfMerger
 
 # Função para formatar números no formato brasileiro
 def format_brazilian(number):
@@ -51,7 +50,7 @@ def create_pdf(vendedor, data, group_df):
     return buffer
 
 # Interface do Streamlit
-st.title("Gerador de PDF por Vendedor")
+st.title("Gerador de PDF de Carregamento")
 uploaded_file = st.file_uploader("Escolha um arquivo Excel", type="xlsx")
 if uploaded_file is not None:
     df = pd.read_excel(uploaded_file, engine='openpyxl')
@@ -59,29 +58,17 @@ if uploaded_file is not None:
     # Agrupar os dados por 'Vendedor' e 'Data'
     grouped = df.groupby(['Vendedor', 'Data'])
     
-    # Buffer para armazenar os PDFs
-    pdf_buffers = []
-    
-    # Iterar sobre cada grupo e criar um PDF
+    # Iterar sobre cada grupo e criar um PDF separado
     for (vendedor, data), group_df in grouped:
         pdf_buffer = create_pdf(vendedor, data, group_df)
-        pdf_buffers.append(pdf_buffer)
-    
-    # Mesclar os PDFs
-    merger = PdfMerger()
-    for pdf_buffer in pdf_buffers:
+        
+        # Salvar o PDF final em um buffer
         pdf_buffer.seek(0)
-        merger.append(pdf_buffer)
-    
-    # Salvar o PDF final em um buffer
-    output_buffer = io.BytesIO()
-    merger.write(output_buffer)
-    merger.close()
-
-    # Botão para download do PDF
-    st.download_button(
-        label="Baixar PDF",
-        data=output_buffer.getvalue(),
-        file_name="relatorio_vendedores.pdf",
-        mime="application/pdf"
-    )
+        
+        # Botão para download do PDF separado para cada vendedor e data
+        st.download_button(
+            label=f"Baixar PDF - {vendedor} - {data}",
+            data=pdf_buffer.getvalue(),
+            file_name=f"{vendedor}_{data}.pdf",
+            mime="application/pdf"
+        )
