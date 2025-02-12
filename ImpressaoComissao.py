@@ -19,6 +19,7 @@ def create_pdf(vendedor, data, group_df):
     elements.append(header)
 
     table_data = [['Sacado', 'Tipo', 'Total', 'Comissao']]
+    total_comissao = 0
     for index, row in group_df.iterrows():
         table_data.append([
             row['Sacado'], 
