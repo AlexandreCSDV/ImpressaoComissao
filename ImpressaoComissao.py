@@ -26,7 +26,10 @@ def create_pdf(vendedor, data, group_df):
             format_brazilian(float(row['Total'])), 
             format_brazilian(float(row['Comissao']))
         ])
+        total_comissao += float(row['Comissao'])
 
+    table_data.append(['', '', 'Subtotal', format_brazilian(total_comissao)])
+    
     table = Table(table_data)
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
@@ -36,6 +39,12 @@ def create_pdf(vendedor, data, group_df):
         ('FONTSIZE', (0, 1), (-1, -1), 8),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 4),
         ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('BACKGROUND', (-2, -1), (-1, -1), colors.lightgrey),
+        ('TEXTCOLOR', (-2, -1), (-1, -1), colors.black),
+        ('ALIGN', (-2, -1), (-1, -1), 'RIGHT'),
+        ('FONTNAME', (-2, -1), (-1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (-2, -1), (-1, -1), 8),
+        ('BOTTOMPADDING', (-2, -1), (-1, -1), 4),
     ]))
     elements.append(table)
 
